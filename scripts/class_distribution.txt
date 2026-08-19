@@ -1,0 +1,23 @@
+PQD-16C DATASET CLASS DISTRIBUTION
+=============================================
+
+Flicker: 100
+Flicker+Harmonics: 100
+Flicker+Sag: 100
+Flicker+Swell: 100
+Harmonics: 100
+Impulsive Transient: 100
+Interruption: 100
+Interruption+Harmonics: 100
+Normal: 100
+Notch: 100
+Oscillatory transient: 100
+Sag: 100
+Sag+Harmonics: 100
+Spike: 100
+Swell: 100
+Swell+Harmonics: 100
+
+=============================================
+Total samples: 1600
+Total classes: 16

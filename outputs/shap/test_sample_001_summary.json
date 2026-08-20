@@ -1,0 +1,181 @@
+{
+  "actual_label": "Swell+Harmonics",
+  "predicted_label": "Swell+Harmonics",
+  "predicted_probability": 0.9962892532348633,
+  "top_features": [
+    {
+      "sample_point": 381,
+      "raw_signal": -0.8988292217254639,
+      "normalized_signal": -1.2637929916381836,
+      "shap_value": 0.28225435021509004,
+      "absolute_shap_value": 0.28225435021509004,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 380,
+      "raw_signal": -1.03163480758667,
+      "normalized_signal": -1.4504876136779785,
+      "shap_value": 0.2665881103224559,
+      "absolute_shap_value": 0.2665881103224559,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 258,
+      "raw_signal": 0.6741967797279358,
+      "normalized_signal": 0.9475260972976685,
+      "shap_value": 0.25911211484657587,
+      "absolute_shap_value": 0.25911211484657587,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 322,
+      "raw_signal": 0.6741967797279358,
+      "normalized_signal": 0.9475260972976685,
+      "shap_value": 0.23532356256346212,
+      "absolute_shap_value": 0.23532356256346212,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 316,
+      "raw_signal": -1.03163480758667,
+      "normalized_signal": -1.4504876136779785,
+      "shap_value": 0.2214982197950859,
+      "absolute_shap_value": 0.2214982197950859,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 284,
+      "raw_signal": 1.03163480758667,
+      "normalized_signal": 1.4500032663345337,
+      "shap_value": 0.2069798451901781,
+      "absolute_shap_value": 0.2069798451901781,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 251,
+      "raw_signal": -1.0953433513641357,
+      "normalized_signal": -1.5400474071502686,
+      "shap_value": -0.20375174161213444,
+      "absolute_shap_value": 0.20375174161213444,
+      "direction": "opposes prediction"
+    },
+    {
+      "sample_point": 327,
+      "raw_signal": 1.1740357875823975,
+      "normalized_signal": 1.6501868963241577,
+      "shap_value": -0.18694778553256441,
+      "absolute_shap_value": 0.18694778553256441,
+      "direction": "opposes prediction"
+    },
+    {
+      "sample_point": 364,
+      "raw_signal": -1.707992434501648,
+      "normalized_signal": -2.4012935161590576,
+      "shap_value": 0.17778151420616972,
+      "absolute_shap_value": 0.17778151420616972,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 279,
+      "raw_signal": 1.3678218126296997,
+      "normalized_signal": 1.9226062297821045,
+      "shap_value": -0.17763558046219682,
+      "absolute_shap_value": 0.17763558046219682,
+      "direction": "opposes prediction"
+    },
+    {
+      "sample_point": 348,
+      "raw_signal": 1.03163480758667,
+      "normalized_signal": 1.4500032663345337,
+      "shap_value": 0.17179594344235077,
+      "absolute_shap_value": 0.17179594344235077,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 263,
+      "raw_signal": 1.1740357875823975,
+      "normalized_signal": 1.6501868963241577,
+      "shap_value": -0.1712825760368799,
+      "absolute_shap_value": 0.1712825760368799,
+      "direction": "opposes prediction"
+    },
+    {
+      "sample_point": 254,
+      "raw_signal": -0.6741967797279358,
+      "normalized_signal": -0.9480105638504028,
+      "shap_value": 0.168364961127056,
+      "absolute_shap_value": 0.168364961127056,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 347,
+      "raw_signal": 1.0953433513641357,
+      "normalized_signal": 1.5395630598068237,
+      "shap_value": 0.1673205197319219,
+      "absolute_shap_value": 0.1673205197319219,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 328,
+      "raw_signal": 1.2529771327972412,
+      "normalized_signal": 1.7611606121063232,
+      "shap_value": -0.16130488756665634,
+      "absolute_shap_value": 0.16130488756665634,
+      "direction": "opposes prediction"
+    },
+    {
+      "sample_point": 365,
+      "raw_signal": -1.7521897554397583,
+      "normalized_signal": -2.4634251594543457,
+      "shap_value": 0.16053231923817207,
+      "absolute_shap_value": 0.16053231923817207,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 264,
+      "raw_signal": 1.2529771327972412,
+      "normalized_signal": 1.7611606121063232,
+      "shap_value": -0.15777990176966017,
+      "absolute_shap_value": 0.15777990176966017,
+      "direction": "opposes prediction"
+    },
+    {
+      "sample_point": 260,
+      "raw_signal": 1.03163480758667,
+      "normalized_signal": 1.4500032663345337,
+      "shap_value": 0.15294619863375436,
+      "absolute_shap_value": 0.15294619863375436,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 374,
+      "raw_signal": -1.4997986555099487,
+      "normalized_signal": -2.1086201667785645,
+      "shap_value": 0.15132155092700264,
+      "absolute_shap_value": 0.15132155092700264,
+      "direction": "supports prediction"
+    },
+    {
+      "sample_point": 324,
+      "raw_signal": 1.03163480758667,
+      "normalized_signal": 1.4500032663345337,
+      "shap_value": 0.1410339385371973,
+      "absolute_shap_value": 0.1410339385371973,
+      "direction": "supports prediction"
+    }
+  ],
+  "total_positive_attribution": 15.857688194056713,
+  "total_negative_attribution": -4.887246621725932,
+  "largest_absolute_attribution": 0.28225435021509004,
+  "sample_number": 1,
+  "split": "test",
+  "architecture": "CNNResBiLSTM",
+  "model": "/mnt/ntfs/my_docs/VIT_Y4_SEM7/C1_XAI/project/models/cnn_res_bilstm_pq.pth",
+  "device": "cpu",
+  "background_size": 32,
+  "nsamples": 200,
+  "normalization": {
+    "train_mean": 0.00017229914374183863,
+    "train_std": 0.7113518714904785
+  }
+}

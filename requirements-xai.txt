@@ -1,0 +1,9 @@
+# Standalone XAI environment for Python 3.11+.
+#
+# Do not include requirements.txt here: that exported file pins
+# numpy==2.5.2, which is not available for Python 3.11.
+numpy>=2.0,<2.4
+pandas>=2.2
+matplotlib>=3.8
+torch>=2.0,<2.14
+shap>=0.45.0,<0.52

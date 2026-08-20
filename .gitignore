@@ -2,4 +2,5 @@
 
 /myenv
 
+*.lock*
 

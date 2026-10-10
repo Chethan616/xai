@@ -16,8 +16,8 @@ import time
 from collections import Counter, deque
 
 import numpy as np
-from PySide6.QtCore import QElapsedTimer, QPointF, QRectF, Qt, QTimer
-from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen
+from PySide6.QtCore import QElapsedTimer, QPointF, QRectF, QSettings, Qt, QTimer
+from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPalette, QPen
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout, QGroupBox, QHBoxLayout,
                                QLabel, QListWidget, QMainWindow, QMessageBox, QProgressBar, QPushButton,
                                QSlider, QVBoxLayout, QWidget)
@@ -29,9 +29,42 @@ VISIBLE_CYCLES = 8
 FRAME_MS = 30
 SINGLE = ["Sag", "Swell", "Interruption", "Harmonics", "Flicker", "Notch", "Transient", "Oscillatory_Transient"]
 
-INK, MUTED, GRID = QColor("#1f1f1e"), QColor("#6b6a64"), QColor("#e4e3de")
-WAVE, ATTR, INJECT = QColor("#1c5cab"), QColor("#eb6834"), QColor("#eef1f8")
-OK, BAD = QColor("#1a7f37"), QColor("#c0392b")
+# every colour in the app comes from the active theme; nothing is left to the OS palette
+THEMES = {
+    "light": dict(window="#f4f4f1", base="#ffffff", text="#1f1f1e", muted="#6b6a64", grid="#e4e3de",
+                  wave="#1c5cab", attr="#eb6834", inject="#eef1f8", ok="#1a7f37", bad="#c0392b",
+                  button="#fafaf8", border="#c9c8c1", accent="#2a78d6"),
+    "dark": dict(window="#202124", base="#17181a", text="#e8e8e6", muted="#a3a39d", grid="#34363b",
+                 wave="#6ea8ff", attr="#ff8a4c", inject="#262c3a", ok="#3fb950", bad="#ff6b5e",
+                 button="#2b2d31", border="#4a4c52", accent="#4c8fe6"),
+}
+T = dict(THEMES["light"])  # active theme, updated in place by apply_theme()
+
+
+def apply_theme(app, name):
+    """Set the Qt palette and the app stylesheet from THEMES[name]."""
+    T.update(THEMES[name])
+    pal = QPalette()
+    for role, key in ((QPalette.Window, "window"), (QPalette.WindowText, "text"), (QPalette.Base, "base"),
+                      (QPalette.AlternateBase, "window"), (QPalette.Text, "text"), (QPalette.Button, "button"),
+                      (QPalette.ButtonText, "text"), (QPalette.Highlight, "accent"),
+                      (QPalette.ToolTipBase, "base"), (QPalette.ToolTipText, "text"),
+                      (QPalette.PlaceholderText, "muted"), (QPalette.Mid, "border"), (QPalette.Dark, "border")):
+        pal.setColor(role, QColor(T[key]))
+    pal.setColor(QPalette.HighlightedText, QColor("white"))
+    for role in (QPalette.WindowText, QPalette.Text, QPalette.ButtonText):
+        pal.setColor(QPalette.Disabled, role, QColor(T["muted"]))
+    app.setPalette(pal)
+    app.setStyleSheet(f"""
+        QPushButton[dist="true"] {{ padding:8px 6px; border:1px solid {T['border']}; border-radius:6px;
+                                    background:{T['button']}; color:{T['text']}; }}
+        QPushButton[dist="true"]:hover {{ border-color:{T['accent']}; }}
+        QPushButton[dist="true"]:pressed {{ background:{T['accent']}; color:white; border-color:{T['accent']}; }}
+        QLabel#caption {{ color:{T['muted']}; font-size:10px; letter-spacing:1px; }}
+        QLabel#why, QLabel#stats {{ color:{T['text']}; }}
+        QLabel#stats {{ font-size:11px; }}
+        QLabel#holding {{ color:{T['attr']}; font-weight:600; }}
+    """)
 
 
 def short(name):
@@ -71,7 +104,7 @@ class Scope(QWidget):
     def paintEvent(self, _):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
-        p.fillRect(self.rect(), Qt.white)
+        p.fillRect(self.rect(), QColor(T["base"]))
         plot = QRectF(52, 30, self.width() - 64, self.height() - 62)
         ymax = 2.0
         to_y = lambda v: plot.center().y() - max(-ymax, min(ymax, v)) / ymax * plot.height() / 2  # noqa: E731
@@ -82,10 +115,10 @@ class Scope(QWidget):
         to_x = lambda s: plot.left() + (s - offset) * px  # noqa: E731
 
         # axes: 0 and ±1 p.u.
-        p.setPen(QPen(GRID, 1))
+        p.setPen(QPen(QColor(T["grid"]), 1))
         for v in (-1.5, -1, -0.5, 0.5, 1, 1.5):
             p.drawLine(QPointF(plot.left(), to_y(v)), QPointF(plot.right(), to_y(v)))
-        p.setPen(QPen(MUTED, 1))
+        p.setPen(QPen(QColor(T["muted"]), 1))
         p.drawLine(QPointF(plot.left(), to_y(0)), QPointF(plot.right(), to_y(0)))
         p.setFont(QFont(p.font().family(), 8))
         for v in (-2, -1, 0, 1, 2):
@@ -103,31 +136,31 @@ class Scope(QWidget):
         for cycle, shown in self.cycles:
             x0, x1 = to_x(start), to_x(start + self.cycle_len)
             if cycle.true_class != NORMAL:                # injected disturbance band
-                p.fillRect(QRectF(x0, plot.top(), x1 - x0, plot.height()), INJECT)
+                p.fillRect(QRectF(x0, plot.top(), x1 - x0, plot.height()), QColor(T["inject"]))
             attr = {"ig": cycle.ig, "cam": cycle.cam}.get(self.attribution)
             if attr is not None and shown == self.cycle_len and cycle.true_class != NORMAL:
                 a = np.convolve(np.abs(attr), np.ones(5) / 5, mode="same")  # smooth 1 ms
                 a = a / (a.max() + 1e-9)
                 for i, w in enumerate(a):                 # attribution heat strip
-                    c = QColor(ATTR)
+                    c = QColor(T["attr"])
                     c.setAlphaF(float(w) ** 2 * 0.6)
                     p.fillRect(QRectF(to_x(start + i), plot.top(), px + 0.6, plot.height()), c)
-            p.setPen(QPen(GRID, 1, Qt.DashLine))
+            p.setPen(QPen(QColor(T["grid"]), 1, Qt.DashLine))
             p.drawLine(QPointF(x1, plot.top()), QPointF(x1, plot.bottom()))
             for i in range(shown):
                 pt = QPointF(to_x(start + i), to_y(float(cycle.samples[i])))
                 path.lineTo(pt) if path.elementCount() else path.moveTo(pt)
             if shown == self.cycle_len and cycle.pred_class:   # prediction tag
                 good = cycle.pred_class == cycle.true_class
-                p.setPen(OK if good else BAD)
+                p.setPen(QColor(T["ok" if good else "bad"]))
                 p.setFont(QFont(p.font().family(), 8, QFont.Bold))
                 p.drawText(QRectF(x0 + 2, plot.top() + 2, x1 - x0 - 4, 16), Qt.AlignCenter,
                            f"{'✓' if good else '✗'} {short(cycle.pred_class)}")
             start += self.cycle_len
-        p.setPen(QPen(WAVE, 2))
+        p.setPen(QPen(QColor(T["wave"]), 2))
         p.drawPath(path)
         p.setClipping(False)
-        p.setPen(MUTED)
+        p.setPen(QColor(T["muted"]))
         p.setFont(QFont(p.font().family(), 8))
         p.drawText(QRectF(plot.left(), 6, plot.width(), 18), Qt.AlignLeft,
                    "grey band = injected disturbance   ·   orange = where the model looked   ·   "
@@ -141,7 +174,7 @@ class PredictionPanel(QFrame):
         self.setFixedWidth(330)
         lay = QVBoxLayout(self)
         caption = QLabel("MODEL PREDICTION  (last full cycle)")
-        caption.setStyleSheet("color:#6b6a64; font-size:10px; letter-spacing:1px;")
+        caption.setObjectName("caption")
         self.pred = QLabel("—")
         self.pred.setStyleSheet("font-size:20px; font-weight:600;")
         self.pred.setWordWrap(True)
@@ -151,6 +184,7 @@ class PredictionPanel(QFrame):
         lay.addWidget(self.pred)
         lay.addWidget(self.truth)
         lay.addSpacing(6)
+        self.last = None
         self.bars = []
         for _ in range(3):
             name, bar = QLabel(""), QProgressBar()
@@ -164,16 +198,17 @@ class PredictionPanel(QFrame):
         lay.addSpacing(6)
         self.why = QLabel("")
         self.why.setWordWrap(True)
-        self.why.setStyleSheet("color:#3d3c38;")
+        self.why.setObjectName("why")
         lay.addWidget(self.why)
         lay.addStretch(1)
         self.stats = QLabel("")
-        self.stats.setStyleSheet("color:#3d3c38; font-size:11px;")
+        self.stats.setObjectName("stats")
         lay.addWidget(self.stats)
 
     def show_cycle(self, c, cycle_ms=20.0):
+        self.last = c
         good = c.pred_class == c.true_class
-        color = "#1a7f37" if good else "#c0392b"
+        color = T["ok" if good else "bad"]
         self.pred.setText(f"{pretty(c.pred_class)}  <span style='color:{color}'>{'✓' if good else '✗'}</span>")
         self.truth.setText(f"confidence {c.confidence:.1%}<br>actually injected: <b>{pretty(c.true_class)}</b>")
         for (name, bar), (cls, prob) in zip(self.bars, c.top3):
@@ -192,8 +227,9 @@ class PredictionPanel(QFrame):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, ckpt, speed):
+    def __init__(self, ckpt, speed, theme):
         super().__init__()
+        self.theme = theme
         self.setWindowTitle("PQD Explainer — live disturbance injection")
         self.stream = DisturbanceStream()
         self.clf = LiveClassifier(self.stream.class_names, self.stream.mean, self.stream.std, ckpt,
@@ -241,27 +277,40 @@ class MainWindow(QMainWindow):
         self.attr.addItems(["Integrated Gradients", "Class Activation Map", "No explanation"])
         self.attr.currentIndexChanged.connect(lambda i: setattr(self.scope, "attribution", ("ig", "cam", None)[i]))
         self.holding = QLabel("")
-        self.holding.setStyleSheet("color:#eb6834; font-weight:600;")
+        self.holding.setObjectName("holding")
+        self.theme_btn = QPushButton()
+        self.theme_btn.clicked.connect(lambda: self.set_theme("light" if self.theme == "dark" else "dark"))
+        row.addWidget(self.theme_btn)
+        self._theme_text()
         for w in (self.pause, QLabel("Speed"), self.speed, self.speed_label, QLabel("   Explanation"), self.attr):
             row.addWidget(w)
         row.addStretch(1)
         row.addWidget(self.holding)
         return row
 
+    def _theme_text(self):
+        self.theme_btn.setText("☀ Light mode" if self.theme == "dark" else "☾ Dark mode")
+
+    def set_theme(self, name):
+        self.theme = name
+        apply_theme(QApplication.instance(), name)
+        QSettings("pqd-explainer", "gui").setValue("theme", name)
+        self._theme_text()
+        if self.panel.last:
+            self.panel.show_cycle(self.panel.last)   # re-colour the ✓ / ✗
+        self.scope.update()
+
     def _speed_text(self, v):
         self.speed_label.setText(f"{v} cycles/s  (×{v / 50:.2f} real time)")
 
     def _buttons(self):
         row = QHBoxLayout()
-        style = ("QPushButton{padding:8px 6px; border:1px solid #c9c8c1; border-radius:6px; background:#fafaf8;}"
-                 "QPushButton:hover{border-color:#2a78d6;}"
-                 "QPushButton:pressed{background:#2a78d6; color:white; border-color:#2a78d6;}")
         combined = [n for n in self.stream.disturbances if n not in SINGLE]
         for title, names in (("Single disturbances", SINGLE), ("Combined disturbances", combined)):
             box, grid = QGroupBox(f"{title}  —  press and hold"), QGridLayout()
             for i, name in enumerate(names):
                 b = QPushButton(pretty(name))
-                b.setStyleSheet(style)
+                b.setProperty("dist", True)
                 b.setAutoRepeat(False)
                 b.pressed.connect(lambda n=name: self._press(n))
                 b.released.connect(lambda n=name: self._release(n))
@@ -347,6 +396,7 @@ def main():
     ap.add_argument("--ckpt", default=GUI_CKPT, help="checkpoint relative to the repo root")
     ap.add_argument("--speed", type=int, default=6, help="playback speed in cycles per second (1-25)")
     ap.add_argument("--demo", metavar="PNG", help="run a scripted demo, save a screenshot and exit")
+    ap.add_argument("--theme", choices=list(THEMES), help="colour theme (default: last used, else the OS setting)")
     a = ap.parse_args()
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
@@ -356,7 +406,11 @@ def main():
                              "--models resnet_cam --seeds 0 --epochs 40 --patience 15\n\nthen copy "
                              "outputs/benchmark/ckpt/xpqrs_sync_resnet_cam_s0.pth to models/resnet_cam_xpqrs_sync.pth")
         return 1
-    win = MainWindow(a.ckpt, max(1, min(25, a.speed)))
+    os_dark = app.styleHints().colorScheme() == Qt.ColorScheme.Dark
+    theme = a.theme or QSettings("pqd-explainer", "gui").value("theme") or ("dark" if os_dark else "light")
+    theme = theme if theme in THEMES else "light"   # ignore a corrupted settings value
+    apply_theme(app, theme)
+    win = MainWindow(a.ckpt, max(1, min(25, a.speed)), theme)
     win.show()
     if a.demo:
         run_demo(win, app, a.demo)

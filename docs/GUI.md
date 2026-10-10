@@ -4,7 +4,9 @@ A desktop application, written with **Qt for Python (PySide6, widgets only)**,
 that lets you *play* power-quality disturbances into a live waveform and watch
 the model classify and explain every cycle as it arrives.
 
-![GUI screenshot](figures/gui.png)
+| Light theme | Dark theme |
+|---|---|
+| ![GUI screenshot, light theme](figures/gui.png) | ![GUI screenshot, dark theme](figures/gui_dark.png) |
 
 ```bash
 python src/gui.py                 # start the app
@@ -41,6 +43,7 @@ python src/gui.py --speed 3       # slower playback (cycles per second, 1-25)
 | Speed slider | playback speed, 1–25 cycles per second |
 | Explanation menu | Integrated Gradients · Class Activation Map · none |
 | Pause / Resume | freeze the scope to inspect a cycle |
+| ☾ Dark mode / ☀ Light mode | switch colour theme; the choice is remembered for the next start |
 
 ## Where the waveforms come from
 
@@ -131,6 +134,11 @@ flowchart LR
   p.u. axis, grey bands for injected cycles, the attribution as a smoothed
   orange heat strip, the waveform as one antialiased path, and a ✓/✗ tag per
   cycle. No plotting library is involved.
+* **Themes.** All colours live in `gui.THEMES` (light / dark). `apply_theme`
+  sets an explicit Qt palette plus one app-wide stylesheet, so the app never
+  inherits OS colours it was not designed for (white-on-white button text on a
+  dark desktop was the original bug). The scope reads the same table when it
+  paints.
 
 ## Command-line options
 
@@ -138,6 +146,7 @@ flowchart LR
 |---|---|---|
 | `--speed N` | 6 | playback speed in cycles per second (1–25) |
 | `--ckpt PATH` | `models/resnet_cam_xpqrs_sync.pth` | checkpoint to load (relative to the repo root) |
+| `--theme light\|dark` | last used, else the OS setting | colour theme |
 | `--demo PNG` | — | run a scripted sequence of presses, save a screenshot to `PNG`, exit (used for `docs/figures/gui.png`; works headless with `QT_QPA_PLATFORM=offscreen`) |
 
 ## Tests

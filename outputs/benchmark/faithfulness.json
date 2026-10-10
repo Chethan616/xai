@@ -1,0 +1,239 @@
+{
+ "feat_extra_trees": {
+  "tree_shap": {
+   "5%": {
+    "drop_top": 0.3276,
+    "drop_random": 0.0534,
+    "ratio": 6.14
+   },
+   "10%": {
+    "drop_top": 0.5249,
+    "drop_random": 0.1409,
+    "ratio": 3.73
+   },
+   "20%": {
+    "drop_top": 0.6172,
+    "drop_random": 0.2498,
+    "ratio": 2.47
+   }
+  }
+ },
+ "xpqrs_resnet_cam": {
+  "integrated_gradients": {
+   "5%": {
+    "drop_top": 0.2298,
+    "drop_random": 0.1683,
+    "ratio": 1.37
+   },
+   "10%": {
+    "drop_top": 0.3964,
+    "drop_random": 0.3267,
+    "ratio": 1.21
+   },
+   "20%": {
+    "drop_top": 0.5947,
+    "drop_random": 0.4982,
+    "ratio": 1.19
+   }
+  },
+  "cam": {
+   "5%": {
+    "drop_top": 0.2051,
+    "drop_random": 0.1715,
+    "ratio": 1.2
+   },
+   "10%": {
+    "drop_top": 0.2701,
+    "drop_random": 0.3023,
+    "ratio": 0.89
+   },
+   "20%": {
+    "drop_top": 0.3324,
+    "drop_random": 0.4987,
+    "ratio": 0.67
+   }
+  }
+ },
+ "resnet_cam": {
+  "integrated_gradients": {
+   "5%": {
+    "drop_top": 0.0974,
+    "drop_random": 0.0018,
+    "ratio": 52.93
+   },
+   "10%": {
+    "drop_top": 0.133,
+    "drop_random": 0.0253,
+    "ratio": 5.26
+   },
+   "20%": {
+    "drop_top": 0.2274,
+    "drop_random": 0.0259,
+    "ratio": 8.79
+   }
+  },
+  "cam": {
+   "5%": {
+    "drop_top": 0.0726,
+    "drop_random": 0.0037,
+    "ratio": 19.79
+   },
+   "10%": {
+    "drop_top": 0.1152,
+    "drop_random": 0.0098,
+    "ratio": 11.79
+   },
+   "20%": {
+    "drop_top": 0.1912,
+    "drop_random": 0.0272,
+    "ratio": 7.04
+   }
+  }
+ },
+ "cnn_complex": {
+  "integrated_gradients": {
+   "5%": {
+    "drop_top": 0.1006,
+    "drop_random": -0.0015,
+    "ratio": 1005.94
+   },
+   "10%": {
+    "drop_top": 0.1792,
+    "drop_random": 0.0278,
+    "ratio": 6.46
+   },
+   "20%": {
+    "drop_top": 0.3241,
+    "drop_random": 0.0477,
+    "ratio": 6.79
+   }
+  }
+ },
+ "cnn_res_bilstm": {
+  "integrated_gradients": {
+   "5%": {
+    "drop_top": 0.1296,
+    "drop_random": 0.0017,
+    "ratio": 77.39
+   },
+   "10%": {
+    "drop_top": 0.2114,
+    "drop_random": 0.0232,
+    "ratio": 9.09
+   },
+   "20%": {
+    "drop_top": 0.3455,
+    "drop_random": 0.0255,
+    "ratio": 13.54
+   }
+  },
+  "attention": {
+   "5%": {
+    "drop_top": 0.0904,
+    "drop_random": 0.0053,
+    "ratio": 17.0
+   },
+   "10%": {
+    "drop_top": 0.1534,
+    "drop_random": 0.0067,
+    "ratio": 22.84
+   },
+   "20%": {
+    "drop_top": 0.2344,
+    "drop_random": 0.0423,
+    "ratio": 5.54
+   }
+  }
+ },
+ "resnet_cam_mv": {
+  "integrated_gradients": {
+   "5%": {
+    "drop_top": 0.1349,
+    "drop_random": 0.0281,
+    "ratio": 4.79
+   },
+   "10%": {
+    "drop_top": 0.2798,
+    "drop_random": 0.092,
+    "ratio": 3.04
+   },
+   "20%": {
+    "drop_top": 0.3333,
+    "drop_random": 0.1568,
+    "ratio": 2.12
+   }
+  },
+  "cam": {
+   "5%": {
+    "drop_top": 0.1176,
+    "drop_random": 0.0123,
+    "ratio": 9.56
+   },
+   "10%": {
+    "drop_top": 0.1805,
+    "drop_random": 0.0782,
+    "ratio": 2.31
+   },
+   "20%": {
+    "drop_top": 0.2508,
+    "drop_random": 0.1646,
+    "ratio": 1.52
+   }
+  }
+ },
+ "inception_cam_mv": {
+  "integrated_gradients": {
+   "5%": {
+    "drop_top": 0.1682,
+    "drop_random": 0.0813,
+    "ratio": 2.07
+   },
+   "10%": {
+    "drop_top": 0.3244,
+    "drop_random": 0.1934,
+    "ratio": 1.68
+   },
+   "20%": {
+    "drop_top": 0.4472,
+    "drop_random": 0.2575,
+    "ratio": 1.74
+   }
+  },
+  "cam": {
+   "5%": {
+    "drop_top": 0.0816,
+    "drop_random": 0.0895,
+    "ratio": 0.91
+   },
+   "10%": {
+    "drop_top": 0.1936,
+    "drop_random": 0.1721,
+    "ratio": 1.12
+   },
+   "20%": {
+    "drop_top": 0.3335,
+    "drop_random": 0.2697,
+    "ratio": 1.24
+   }
+  }
+ },
+ "cycle_transformer": {
+  "integrated_gradients": {
+   "5%": {
+    "drop_top": 0.236,
+    "drop_random": 0.0605,
+    "ratio": 3.9
+   },
+   "10%": {
+    "drop_top": 0.2966,
+    "drop_random": 0.1412,
+    "ratio": 2.1
+   },
+   "20%": {
+    "drop_top": 0.3744,
+    "drop_random": 0.1366,
+    "ratio": 2.74
+   }
+  }
+ }
+}

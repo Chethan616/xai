@@ -1,0 +1,33 @@
+Fundamental Frequency: 50 Hz
+Sampling Rate: 5 kHz
+Number of Classes: 17
+Signals/Class: 1000
+Length of Signal (samples): 100
+Length of Signal (time): 20 ms
+Amplitude of each Signal: -1 to 1 (scaled)
+
+
+MATLAB
+Filename: 5Kfs_1Cycle_50f_1000Sam_1A.mat
+It contains a Matrix (1000 x 100 x 17) | (Signals per classes x Samples per Signal x Class)
+The classes are placed in the following order:
+1. Pure_Sinusoidal
+2. Sag
+3. Swell
+4. Interruption
+5. Transient
+6. Oscillatory_Transient
+7. Harmonics
+8. Harmonics_with_Sag
+9. Harmonics_with_Swell
+10. Flicker
+11. Flicker_with_Sag
+12. Flicker_with_Swell
+13. Sag_with_Oscillatory_Transient
+14. Swell_with_Oscillatory_Transient
+15. Sag_with_Harmonics
+16. Swell_with_Harmonics
+17. Notch
+
+CSV
+There are 17 CSV files for each Class. Each CSV file (1000 x 100) has 1000 signals with each signal having a length of 100 samples.

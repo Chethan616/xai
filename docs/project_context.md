@@ -1,3 +1,7 @@
+> **Legacy notes** — written for the first iteration of the project (1-D CNN,
+> `notebooks/`, `models/legacy/`). For the current pipeline see the
+> [README](../README.md) and [ARCHITECTURE.md](ARCHITECTURE.md).
+
 Absolutely. Here is a **project context document** written so another LLM can quickly understand the entire project without needing to reconstruct it from our previous conversations.
 
 ---

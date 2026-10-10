@@ -1,0 +1,9 @@
+flowchart LR
+    s["test signal"] --> m1["model → predicted class c,<br/>confidence p"]
+    s --> a["attribution for c<br/>(IG / CAM / SHAP)"]
+    a --> k["split signal into 20 segments;<br/>rank by summed attribution"]
+    k --> t["replace top-k segments<br/>with a clean sine"]
+    k --> r["replace k random segments<br/>with a clean sine"]
+    t --> d1["drop_top = p − p'"]
+    r --> d2["drop_random = p − p''"]
+    d1 & d2 --> g["gap = drop_top − drop_random<br/>(> 0 ⇒ explanation points at real evidence)"]

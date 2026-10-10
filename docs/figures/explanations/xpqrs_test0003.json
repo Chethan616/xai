@@ -1,0 +1,26 @@
+{
+ "dataset": "xpqrs",
+ "sample": 3,
+ "true_class": "Interruption",
+ "predicted_class": "Interruption",
+ "confidence": 0.9999,
+ "top3": [
+  [
+   "Interruption",
+   0.9999
+  ],
+  [
+   "Sag",
+   0.0001
+  ],
+  [
+   "Flicker_with_Sag",
+   0.0
+  ]
+ ],
+ "most_influential_segment_samples": [
+  60,
+  65
+ ],
+ "signal_peak_pu": 1.0
+}

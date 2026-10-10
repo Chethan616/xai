@@ -1,0 +1,26 @@
+{
+ "dataset": "xpqrs",
+ "sample": 7,
+ "true_class": "Harmonics_with_Swell",
+ "predicted_class": "Harmonics_with_Swell",
+ "confidence": 1.0,
+ "top3": [
+  [
+   "Harmonics_with_Swell",
+   1.0
+  ],
+  [
+   "Harmonics",
+   0.0
+  ],
+  [
+   "Harmonics_with_Sag",
+   0.0
+  ]
+ ],
+ "most_influential_segment_samples": [
+  70,
+  75
+ ],
+ "signal_peak_pu": 1.312
+}

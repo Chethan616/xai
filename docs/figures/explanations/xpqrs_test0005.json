@@ -1,0 +1,26 @@
+{
+ "dataset": "xpqrs",
+ "sample": 5,
+ "true_class": "Sag",
+ "predicted_class": "Sag",
+ "confidence": 1.0,
+ "top3": [
+  [
+   "Sag",
+   1.0
+  ],
+  [
+   "Flicker_with_Sag",
+   0.0
+  ],
+  [
+   "Sag_with_Oscillatory_Transient",
+   0.0
+  ]
+ ],
+ "most_influential_segment_samples": [
+  75,
+  80
+ ],
+ "signal_peak_pu": 0.809
+}

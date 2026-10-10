@@ -1,0 +1,26 @@
+{
+ "dataset": "xpqrs",
+ "sample": 4,
+ "true_class": "Oscillatory_Transient",
+ "predicted_class": "Oscillatory_Transient",
+ "confidence": 0.9998,
+ "top3": [
+  [
+   "Oscillatory_Transient",
+   0.9998
+  ],
+  [
+   "Sag_with_Oscillatory_Transient",
+   0.0002
+  ],
+  [
+   "Swell_with_Oscillatory_Transient",
+   0.0
+  ]
+ ],
+ "most_influential_segment_samples": [
+  50,
+  55
+ ],
+ "signal_peak_pu": 1.068
+}

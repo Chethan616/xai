@@ -1,0 +1,3 @@
+flowchart LR
+    x["x"] --> c1["Conv1d k, dilation d<br/>BatchNorm · GELU"] --> c2["Conv1d k, dilation d<br/>BatchNorm"] --> add(("+")) --> g["GELU"] --> y["out"]
+    x --> sk["1×1 Conv + BatchNorm<br/>(only if channels change)"] --> add

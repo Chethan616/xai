@@ -163,7 +163,7 @@ class Scope(QWidget):
         p.setPen(QColor(T["muted"]))
         p.setFont(QFont(p.font().family(), 8))
         p.drawText(QRectF(plot.left(), 6, plot.width(), 18), Qt.AlignLeft,
-                   "grey band = injected disturbance   ·   orange = where the model looked   ·   "
+                   "grey band = injected disturbance   |   orange = where the model looked   |   "
                    "tag = model prediction (✓ correct, ✗ wrong)")
 
 
@@ -368,7 +368,7 @@ class MainWindow(QMainWindow):
         if not r or r["cls"] == NORMAL:
             return
         n = sum(r["preds"].values())
-        held = f"held {r['held']:.1f} s · " if r["held"] is not None else ""
+        held = f"held {r['held']:.1f} s, " if r["held"] is not None else ""
         verdict = ", ".join(f"{pretty(k)} ×{v}" for k, v in r["preds"].most_common())
         self.log.insertItem(0, f"{time.strftime('%H:%M:%S')}  {pretty(r['cls'])}: {held}{n} cycle"
                                f"{'s' if n > 1 else ''} → model said {verdict}")

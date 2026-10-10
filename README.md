@@ -8,7 +8,7 @@ explanations can be trusted**.
 | | XPQRS (17 classes) | PQD-16c (16 classes) |
 |---|---|---|
 | **ResNet-CAM test accuracy** | **98.3 %** (macro-F1 0.983) | **88.8 %** (macro-F1 0.880) |
-| Best baseline | 98.4 % · CNN-Complex, 3× the parameters | 87.8 % · CNN-Complex |
+| Best baseline | 98.4 %, CNN-Complex, 3× the parameters | 87.8 %, CNN-Complex |
 | Explanation | Class Activation Map + Integrated Gradients | same + Tree SHAP on physics features |
 
 * **One small, explainable model wins.** A 455 k-parameter ResNet with a
@@ -28,7 +28,7 @@ explanations can be trusted**.
 
 ```mermaid
 flowchart LR
-    A[("voltage waveform<br/>XPQRS · PQD-16c")] --> B["split + z-score<br/>(train stats only)"]
+    A[("voltage waveform<br/>XPQRS, PQD-16c")] --> B["split + z-score<br/>(train stats only)"]
     B --> C["ResNet-CAM<br/>classifier"]
     B --> C2["48 physics features<br/>→ Extra-Trees"]
     C --> D["CAM + Integrated<br/>Gradients"]
@@ -155,7 +155,7 @@ To use a newly trained model with `explain.py`, pass `--ckpt <path>`.
 ├── models/                   resnet_cam_xpqrs.pth, resnet_cam_pqd16.pth,
 │                             resnet_cam_xpqrs_sync.pth (GUI), legacy/
 ├── outputs/benchmark/        results.jsonl, faithfulness.json
-└── docs/                     ARCHITECTURE · RESULTS · XAI · GUI, figures/, diagrams/, papers/
+└── docs/                     ARCHITECTURE, RESULTS, XAI, GUI, figures/, diagrams/, papers/
 ```
 
 ## Documentation

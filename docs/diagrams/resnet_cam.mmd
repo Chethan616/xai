@@ -1,5 +1,5 @@
 flowchart TB
-    IN["input signal<br/>1 × L<br/>(L = 100 XPQRS · 640 PQD-16c)"]
+    IN["input signal<br/>1 × L<br/>(L = 100 XPQRS, 640 PQD-16c)"]
     S["Conv1d k7, 64 ch → BatchNorm → GELU"]
     R1["Residual block 64→64, k7"]
     P1["MaxPool ÷2  →  L/2"]
@@ -12,7 +12,7 @@ flowchart TB
     DO["Dropout 0.3"]
     FC["Linear 128 → C classes"]
     OUT(["class probabilities"])
-    CAM(["CAM_c(t) = Σ_k w_ck · f_k(t)<br/>upsampled to L"])
+    CAM(["CAM_c(t) = Σ_k w_ck × f_k(t)<br/>upsampled to L"])
 
     IN --> S --> R1 --> P1 --> R2 --> P2 --> R3 --> R4 --> FM --> GAP --> DO --> FC --> OUT
     FM -. "feature maps f_k(t)" .-> CAM

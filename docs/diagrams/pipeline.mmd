@@ -1,23 +1,23 @@
 flowchart LR
-    subgraph DATA["1 · Data"]
-        A1[("XPQRS<br/>17 classes · 1 cycle")]
-        A2[("PQD-16c<br/>16 classes · 10 cycles")]
+    subgraph DATA["1 | Data"]
+        A1[("XPQRS<br/>17 classes, 1 cycle")]
+        A2[("PQD-16c<br/>16 classes, 10 cycles")]
     end
-    subgraph PREP["2 · Pre-processing  (src/data.py)"]
+    subgraph PREP["2 | Pre-processing  (src/data.py)"]
         B1["stratified split<br/>train / val / test"]
         B2["z-score with<br/>train mean & std only"]
     end
-    subgraph MODEL["3 · Classification"]
+    subgraph MODEL["3 | Classification"]
         C1["ResNet-CAM<br/>(src/models.py)"]
         C2["physics features → Extra-Trees<br/>(src/features.py)"]
     end
-    subgraph XAI["4 · Explanation"]
+    subgraph XAI["4 | Explanation"]
         D1["Integrated Gradients"]
         D2["Class Activation Map"]
         D3["Tree SHAP"]
     end
-    subgraph EVAL["5 · Trust checks"]
-        E1["accuracy · macro-F1<br/>confusion matrix"]
+    subgraph EVAL["5 | Trust checks"]
+        E1["accuracy, macro-F1<br/>confusion matrix"]
         E2["faithfulness<br/>deletion test"]
     end
     F["JSON summary<br/>→ LLM narration"]

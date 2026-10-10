@@ -120,7 +120,7 @@ def faithfulness():
         ds = "XPQRS" if model.startswith("xpqrs_") else "PQD-16c"
         for method, r in methods.items():
             gap = r["10%"]["drop_top"] - r["10%"]["drop_random"]
-            rows.append((gap, f"{model.removeprefix('xpqrs_')} · {nice[method]}  [{ds}]", ds))
+            rows.append((gap, f"{model.removeprefix('xpqrs_')} | {nice[method]}  [{ds}]", ds))
     rows.sort()
     fig, ax = plt.subplots(figsize=(9, 5))
     ax.barh(range(len(rows)), [r[0] for r in rows], tick_label=[r[1] for r in rows],

@@ -8,25 +8,25 @@ their `.mmd` sources.
 
 ```mermaid
 flowchart LR
-    subgraph DATA["1 · Data"]
-        A1[("XPQRS<br/>17 classes · 1 cycle")]
-        A2[("PQD-16c<br/>16 classes · 10 cycles")]
+    subgraph DATA["1 | Data"]
+        A1[("XPQRS<br/>17 classes, 1 cycle")]
+        A2[("PQD-16c<br/>16 classes, 10 cycles")]
     end
-    subgraph PREP["2 · Pre-processing  (src/data.py)"]
+    subgraph PREP["2 | Pre-processing  (src/data.py)"]
         B1["stratified split<br/>train / val / test"]
         B2["z-score with<br/>train mean & std only"]
     end
-    subgraph MODEL["3 · Classification"]
+    subgraph MODEL["3 | Classification"]
         C1["ResNet-CAM<br/>(src/models.py)"]
         C2["physics features → Extra-Trees<br/>(src/features.py)"]
     end
-    subgraph XAI["4 · Explanation"]
+    subgraph XAI["4 | Explanation"]
         D1["Integrated Gradients"]
         D2["Class Activation Map"]
         D3["Tree SHAP"]
     end
-    subgraph EVAL["5 · Trust checks"]
-        E1["accuracy · macro-F1<br/>confusion matrix"]
+    subgraph EVAL["5 | Trust checks"]
+        E1["accuracy, macro-F1<br/>confusion matrix"]
         E2["faithfulness<br/>deletion test"]
     end
     F["JSON summary<br/>→ LLM narration"]
@@ -59,7 +59,7 @@ free (Zhou et al. 2016). 455 k parameters.
 
 ```mermaid
 flowchart TB
-    IN["input signal<br/>1 × L<br/>(L = 100 XPQRS · 640 PQD-16c)"]
+    IN["input signal<br/>1 × L<br/>(L = 100 XPQRS, 640 PQD-16c)"]
     S["Conv1d k7, 64 ch → BatchNorm → GELU"]
     R1["Residual block 64→64, k7"]
     P1["MaxPool ÷2  →  L/2"]
@@ -72,7 +72,7 @@ flowchart TB
     DO["Dropout 0.3"]
     FC["Linear 128 → C classes"]
     OUT(["class probabilities"])
-    CAM(["CAM_c(t) = Σ_k w_ck · f_k(t)<br/>upsampled to L"])
+    CAM(["CAM_c(t) = Σ_k w_ck × f_k(t)<br/>upsampled to L"])
 
     IN --> S --> R1 --> P1 --> R2 --> P2 --> R3 --> R4 --> FM --> GAP --> DO --> FC --> OUT
     FM -. "feature maps f_k(t)" .-> CAM
@@ -83,7 +83,7 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    x["x"] --> c1["Conv1d k, dilation d<br/>BatchNorm · GELU"] --> c2["Conv1d k, dilation d<br/>BatchNorm"] --> add(("+")) --> g["GELU"] --> y["out"]
+    x["x"] --> c1["Conv1d k, dilation d<br/>BatchNorm, GELU"] --> c2["Conv1d k, dilation d<br/>BatchNorm"] --> add(("+")) --> g["GELU"] --> y["out"]
     x --> sk["1×1 Conv + BatchNorm<br/>(only if channels change)"] --> add
 ```
 
@@ -117,7 +117,7 @@ like an engineer's note: per-cycle RMS, minimum/maximum sliding RMS, time below
 | Batch | 64, gradient-norm clip 1.0 |
 | Loss | cross-entropy |
 | Model selection | best validation accuracy (ties → lower validation loss) |
-| Epochs / patience | PQD-16c 70 / 25 · XPQRS 40 / 15 |
+| Epochs / patience | PQD-16c 70 / 25, XPQRS 40 / 15 |
 | Threads | CPU only (4 threads) — no GPU needed |
 
 The test split is touched exactly once, after selection.
@@ -165,5 +165,5 @@ evidence.
 ├── dataset/                  XPQRS + PQD-16c CSVs, README
 ├── models/                   final checkpoints (+ legacy/ first-iteration ones)
 ├── outputs/benchmark/        results.jsonl, faithfulness.json
-└── docs/                     ARCHITECTURE · RESULTS · XAI · GUI, figures/, diagrams/, papers/
+└── docs/                     ARCHITECTURE, RESULTS, XAI, GUI, figures/, diagrams/, papers/
 ```

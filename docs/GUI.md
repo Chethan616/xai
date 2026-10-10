@@ -41,7 +41,7 @@ python src/gui.py --speed 3       # slower playback (cycles per second, 1-25)
 |---|---|
 | Disturbance buttons (8 single + 8 combined) | hold to inject that class |
 | Speed slider | playback speed, 1–25 cycles per second |
-| Explanation menu | Integrated Gradients · Class Activation Map · none |
+| Explanation menu | Integrated Gradients, Class Activation Map, none |
 | Pause / Resume | freeze the scope to inspect a cycle |
 | ☾ Dark mode / ☀ Light mode | switch colour theme; the choice is remembered for the next start |
 
@@ -102,12 +102,12 @@ single cycles.
 
 ```mermaid
 flowchart LR
-    BTN["disturbance buttons<br/>pressed / released"] -->|press · release| ST["DisturbanceStream<br/>(src/stream.py)"]
+    BTN["disturbance buttons<br/>pressed / released"] -->|press, release| ST["DisturbanceStream<br/>(src/stream.py)"]
     BANK[("XPQRS test split<br/>zero-crossing synced<br/>one bank per class")] --> ST
-    TICK(["QTimer · every 30 ms"]) --> MW["MainWindow.tick<br/>(src/gui.py)"]
+    TICK(["QTimer, every 30 ms"]) --> MW["MainWindow.tick<br/>(src/gui.py)"]
     MW -->|"need a new cycle"| ST
     ST -->|"Cycle: 100 samples + true class"| LC["LiveClassifier<br/>ResNet-CAM + IG + CAM"]
-    LC -->|"prediction · top-3 · attributions"| MW
+    LC -->|"prediction, top-3, attributions"| MW
     MW -->|"reveal N samples / frame"| SC["Scope<br/>(QPainter oscilloscope)"]
     MW -->|"cycle finished"| PP["Prediction panel"]
     MW -->|"run of same class ends"| LOG["Event log"]

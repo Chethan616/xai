@@ -44,15 +44,15 @@ explanation identified evidence the model really uses. 160 test signals
 
 ![faithfulness](figures/faithfulness.png)
 
-| Model · method | gap @5 % | gap @10 % | gap @20 % |
+| Model, method | gap @5 % | gap @10 % | gap @20 % |
 |---|---|---|---|
-| feat_extra_trees · Tree SHAP (PQD-16c) | **0.27** | **0.38** | **0.37** |
-| cnn_res_bilstm · IG (PQD-16c) | 0.13 | 0.19 | 0.32 |
-| cnn_complex · IG (PQD-16c) | 0.10 | 0.15 | 0.28 |
-| resnet_cam · IG (PQD-16c) | 0.10 | 0.11 | 0.20 |
-| resnet_cam · CAM (PQD-16c) | 0.07 | 0.11 | 0.16 |
-| resnet_cam · IG (XPQRS) | 0.06 | 0.07 | 0.10 |
-| resnet_cam · CAM (XPQRS) | 0.03 | −0.03 | −0.17 |
+| feat_extra_trees, Tree SHAP (PQD-16c) | **0.27** | **0.38** | **0.37** |
+| cnn_res_bilstm, IG (PQD-16c) | 0.13 | 0.19 | 0.32 |
+| cnn_complex, IG (PQD-16c) | 0.10 | 0.15 | 0.28 |
+| resnet_cam, IG (PQD-16c) | 0.10 | 0.11 | 0.20 |
+| resnet_cam, CAM (PQD-16c) | 0.07 | 0.11 | 0.16 |
+| resnet_cam, IG (XPQRS) | 0.06 | 0.07 | 0.10 |
+| resnet_cam, CAM (XPQRS) | 0.03 | −0.03 | −0.17 |
 
 Findings:
 

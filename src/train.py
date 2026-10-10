@@ -18,7 +18,8 @@ from sklearn.metrics import f1_score
 from data import ROOT, load_splits, load_xpqrs
 from models import MODELS
 
-DATASETS = {"pqd16": load_splits, "xpqrs": load_xpqrs}
+DATASETS = {"pqd16": load_splits, "xpqrs": load_xpqrs,
+            "xpqrs_sync": lambda: load_xpqrs(sync=True)}  # zero-crossing-synchronised (GUI model)
 
 OUT = ROOT / "outputs" / "benchmark"
 

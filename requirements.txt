@@ -10,6 +10,9 @@ torch>=2.2
 matplotlib>=3.8
 shap>=0.45
 
+# desktop GUI (src/gui.py) — Qt for Python, widgets only
+PySide6-Essentials>=6.6
+
 # notebooks only
 notebook>=7.0
 ipykernel>=6.0

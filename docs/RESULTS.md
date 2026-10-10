@@ -14,10 +14,13 @@ regenerated with `python src/make_figures.py`.
 | PQD-16c (16 classes, 320 test signals) | **ResNet-CAM** | **88.8 %** | **0.880** | 455 k |
 | PQD-16c | CNN-Complex (baseline) | 87.8 % | 0.876 | 1.42 M |
 | PQD-16c | CNN-Res-BiLSTM (baseline) | 87.5 % | 0.875 | 1.0 M |
+| XPQRS, zero-crossing-synchronised (GUI model) | ResNet-CAM | 98.1 % | 0.981 | 455 k |
 
 ResNet-CAM is the selected model: it matches the strongest baseline on XPQRS
 (the 0.15-point gap is 5 of 3 400 test signals) and beats both baselines on
 PQD-16c, with a third of the parameters and an exact built-in explanation.
+The synchronised variant powers the live GUI — see [GUI.md](GUI.md#the-model-behind-the-gui)
+for why it exists.
 
 ![model comparison](figures/model_comparison.png)
 

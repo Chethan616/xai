@@ -47,6 +47,7 @@ flowchart LR
 | Explain one signal | `src/explain.py` | PNG + JSON in `outputs/explanations/` |
 | Faithfulness test | `src/faithfulness.py` | `outputs/benchmark/faithfulness.json` |
 | Figures for the docs | `src/make_figures.py` | `docs/figures/*.png` |
+| Live GUI | `src/stream.py` + `src/gui.py` | interactive Qt window ([GUI.md](GUI.md)) |
 
 ## 2. Selected model — ResNet-CAM
 
@@ -156,11 +157,13 @@ evidence.
 │   ├── explain.py            classify + explain one signal (PNG + JSON)
 │   ├── faithfulness.py       deletion test for explanations
 │   ├── make_figures.py       regenerate docs/figures
+│   ├── stream.py             GUI signal source + live classifier (no Qt)
+│   ├── gui.py                Qt live disturbance explainer
 │   └── legacy/               first-iteration SHAP / attention scripts
-├── tests/test_faithfulness.py
+├── tests/                    test_faithfulness.py, test_stream.py
 ├── notebooks/                01–05 original exploration notebooks, archive/
 ├── dataset/                  XPQRS + PQD-16c CSVs, README
 ├── models/                   final checkpoints (+ legacy/ first-iteration ones)
 ├── outputs/benchmark/        results.jsonl, faithfulness.json
-└── docs/                     ARCHITECTURE · RESULTS · XAI, figures/, papers/
+└── docs/                     ARCHITECTURE · RESULTS · XAI · GUI, figures/, diagrams/, papers/
 ```

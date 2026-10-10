@@ -15,6 +15,9 @@ explanations can be trusted**.
   CAM head matches or beats both baselines (1.0 M and 1.4 M parameters).
 * **Explanations are measured, not assumed.** A deletion test scores every
   explanation method; physics-feature SHAP is the most faithful, CAM the least.
+* **Interactive Qt app.** Hold a button to inject a sag, swell, transient … into
+  a live 50 Hz waveform and watch the model classify and explain every cycle.
+  See [docs/GUI.md](docs/GUI.md).
 * **XAI caught a dataset bug.** In PQD-16c every *Interruption* signal has sag
   depth (never below 0.1 p.u.), which caps any model at ≈ 87.5 %. Details in
   [docs/XAI.md](docs/XAI.md#what-xai-revealed-about-pqd-16c).
@@ -84,10 +87,23 @@ PQD-16c). Use `--dataset pqd16` for the 10-cycle dataset.
 
 ![example explanation](docs/figures/explanations/xpqrs_test0004.png)
 
-### 4. Run the self-check
+### 4. Launch the live GUI
+
+```bash
+python src/gui.py
+```
+
+Hold any disturbance button to inject it into the waveform; release to return
+to a clean sine. Every cycle is a real XPQRS test window, classified live, with
+the model's evidence shaded in orange. Full guide: [docs/GUI.md](docs/GUI.md).
+
+![GUI](docs/figures/gui.png)
+
+### 5. Run the self-checks
 
 ```bash
 python tests/test_faithfulness.py      # prints "ok"
+python tests/test_stream.py            # prints "ok"
 ```
 
 ## Reproduce the results
@@ -128,15 +144,18 @@ To use a newly trained model with `explain.py`, pass `--ckpt <path>`.
 │   ├── train.py              train / evaluate signal models
 │   ├── train_features.py     train / evaluate feature models
 │   ├── explain.py            classify + explain one signal
+│   ├── stream.py             GUI signal source + live classifier (no Qt)
+│   ├── gui.py                Qt live disturbance explainer
 │   ├── faithfulness.py       deletion test for explanations
 │   ├── make_figures.py       regenerate docs/figures
 │   └── legacy/               first-iteration SHAP and attention scripts
-├── tests/                    self-check for the faithfulness test
+├── tests/                    self-checks (faithfulness test, GUI stream)
 ├── notebooks/                exploration notebooks 01–05 (+ archive/)
 ├── dataset/                  XPQRS and PQD-16c CSVs — see dataset/README.md
-├── models/                   resnet_cam_xpqrs.pth, resnet_cam_pqd16.pth (+ legacy/)
+├── models/                   resnet_cam_xpqrs.pth, resnet_cam_pqd16.pth,
+│                             resnet_cam_xpqrs_sync.pth (GUI), legacy/
 ├── outputs/benchmark/        results.jsonl, faithfulness.json
-└── docs/                     ARCHITECTURE · RESULTS · XAI, figures/, papers/
+└── docs/                     ARCHITECTURE · RESULTS · XAI · GUI, figures/, diagrams/, papers/
 ```
 
 ## Documentation
@@ -146,6 +165,7 @@ To use a newly trained model with `explain.py`, pass `--ckpt <path>`.
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | pipeline, ResNet-CAM architecture, models compared, training protocol, faithfulness procedure |
 | [docs/RESULTS.md](docs/RESULTS.md) | full benchmark tables, per-class F1, confusion matrices, sanity checks, limitations |
 | [docs/XAI.md](docs/XAI.md) | explanation methods, example explanations, faithfulness results, the PQD-16c label finding, LLM hand-off |
+| [docs/GUI.md](docs/GUI.md) | using the Qt app, where its waveforms come from, the GUI model, how it works |
 | [dataset/README.md](dataset/README.md) | dataset sources, formats, splits, known issues, citation |
 | [src/legacy/README.md](src/legacy/README.md) | first-iteration SHAP pipeline |
 

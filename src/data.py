@@ -30,14 +30,32 @@ def load_splits():
 XPQRS_DIR = ROOT / "dataset" / "XPQRS"
 
 
-def load_xpqrs(seed=42):
+def sync_to_zero_crossing(sig):
+    """Circularly shift each 1-cycle window so its fundamental starts at a
+    rising zero crossing (phase 0), like the zero-crossing-synchronised windows
+    of a PQ analyser (IEC 61000-4-30). sig: (N, L) -> (N, L).
+    For x = A sin(2*pi*t/L + theta) the rfft bin-1 angle is theta - pi/2, so a
+    shift of theta/(2*pi)*L samples moves the window to phase 0."""
+    sig = np.asarray(sig)
+    n, length = sig.shape
+    theta = np.angle(np.fft.rfft(sig, axis=1)[:, 1]) + np.pi / 2
+    k = np.rint(theta / (2 * np.pi) * length).astype(int) % length
+    idx = (np.arange(length)[None, :] - k[:, None]) % length  # np.roll(x, k) per row
+    return sig[np.arange(n)[:, None], idx]
+
+
+def load_xpqrs(seed=42, sync=False):
     """XPQRS (17 classes x 1000 signals, 1 cycle = 100 samples @ 5 kHz).
-    Stratified 64/16/20 train/val/test split, same ratios as PQD-16c."""
+    Stratified 64/16/20 train/val/test split, same ratios as PQD-16c.
+    sync=True applies sync_to_zero_crossing to every window (used by the GUI
+    model, whose input is a continuous stream cut at zero crossings)."""
     from sklearn.model_selection import train_test_split
     files = sorted(XPQRS_DIR.glob("*.csv"))
     class_names = [f.stem for f in files]
     sig = np.vstack([pd.read_csv(f, header=None).values for f in files]).astype(np.float32)
     lab = np.repeat(np.arange(len(files)), [1000] * len(files)).astype(np.int64)
+    if sync:
+        sig = sync_to_zero_crossing(sig)
     idx = np.arange(len(lab))
     tr, te = train_test_split(idx, test_size=0.2, stratify=lab, random_state=seed)
     tr, va = train_test_split(tr, test_size=0.2, stratify=lab[tr], random_state=seed)

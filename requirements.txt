@@ -9,6 +9,9 @@ scikit-learn>=1.5
 torch>=2.2
 matplotlib>=3.8
 shap>=0.45
+transformers>=4.45
+peft>=0.13
+accelerate>=0.34
 
 # desktop GUI (src/gui.py) — Qt for Python, widgets only
 PySide6-Essentials>=6.6

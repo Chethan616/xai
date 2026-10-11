@@ -11,12 +11,14 @@ attribution (Integrated Gradients or CAM) drawn under the waveform.
     python src/gui.py --demo docs/figures/gui.png   # scripted run + screenshot
 """
 import argparse
+import json
 import sys
 import time
 from collections import Counter, deque
 
 import numpy as np
-from PySide6.QtCore import QElapsedTimer, QPointF, QRectF, QSettings, Qt, QTimer
+from PySide6.QtCore import (QElapsedTimer, QObject, QPointF, QRectF, QSettings, Qt, QThread,
+                            QTimer, Signal, Slot)
 from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPalette, QPen
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout, QGroupBox, QHBoxLayout,
                                QLabel, QListWidget, QMainWindow, QMessageBox, QProgressBar, QPushButton,
@@ -200,6 +202,18 @@ class PredictionPanel(QFrame):
         self.why.setWordWrap(True)
         self.why.setObjectName("why")
         lay.addWidget(self.why)
+        self.llm_button = QPushButton("Generate LLM explanation")
+        self.llm_button.setEnabled(False)
+        lay.addWidget(self.llm_button)
+        self.llm_status = QLabel("LLM narration is not loaded.")
+        self.llm_status.setWordWrap(True)
+        self.llm_status.setObjectName("why")
+        lay.addWidget(self.llm_status)
+        self.llm_text = QLabel("")
+        self.llm_text.setWordWrap(True)
+        self.llm_text.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.llm_text.setObjectName("why")
+        lay.addWidget(self.llm_text)
         lay.addStretch(1)
         self.stats = QLabel("")
         self.stats.setObjectName("stats")
@@ -226,8 +240,56 @@ class PredictionPanel(QFrame):
                          f"peak |v| = {np.abs(c.samples).max():.2f} p.u.")
 
 
+class NarrationWorker(QObject):
+    ready = Signal(str)
+    failed = Signal(str)
+    loaded = Signal()
+    request = Signal(dict)
+
+    def __init__(self, adapter, base_model):
+        super().__init__()
+        self.adapter, self.base_model = adapter, base_model
+        self.tokenizer = self.model = None
+        self.request.connect(self.generate)
+
+    @Slot(dict)
+    def generate(self, summary):
+        try:
+            if self.model is None:
+                import torch
+                from peft import PeftModel
+                from transformers import AutoModelForCausalLM, AutoTokenizer
+                self.tokenizer = AutoTokenizer.from_pretrained(self.adapter)
+                base = AutoModelForCausalLM.from_pretrained(self.base_model)
+                self.model = PeftModel.from_pretrained(base, self.adapter)
+                self.model.eval()
+                self.loaded.emit()
+            import torch
+            messages = [
+                {"role": "system", "content": (
+                    "You are a power-quality engineer. Explain a classifier prediction "
+                    "plainly. Use only the supplied fields and do not invent measurements."
+                )},
+                {"role": "user", "content": (
+                    "Explain this power-quality result for a non-expert:\n"
+                    + json.dumps(summary, separators=(",", ":"))
+                )},
+            ]
+            prompt = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True)
+            inputs = self.tokenizer(prompt, return_tensors="pt")
+            with torch.no_grad():
+                output = self.model.generate(
+                    **inputs, max_new_tokens=100, do_sample=False,
+                    pad_token_id=self.tokenizer.eos_token_id)
+            generated = output[0, inputs["input_ids"].shape[1]:]
+            self.ready.emit(self.tokenizer.decode(generated, skip_special_tokens=True).strip())
+        except Exception as exc:
+            self.failed.emit(f"LLM narration unavailable: {exc}")
+
+
 class MainWindow(QMainWindow):
-    def __init__(self, ckpt, speed, theme):
+    def __init__(self, ckpt, speed, theme, llm_adapter, llm_base):
         super().__init__()
         self.theme = theme
         self.setWindowTitle("PQD Explainer — live disturbance injection")
@@ -236,6 +298,16 @@ class MainWindow(QMainWindow):
                                   self.stream.cycle_len)
         self.scope = Scope(self.stream.cycle_len)
         self.panel = PredictionPanel()
+        self.llm_thread = QThread(self)
+        self.llm_worker = NarrationWorker(llm_adapter, llm_base)
+        self.llm_worker.moveToThread(self.llm_thread)
+        self.llm_worker.loaded.connect(lambda: self.panel.llm_status.setText("LLM ready."))
+        self.llm_worker.ready.connect(self._show_narration)
+        self.llm_worker.failed.connect(self._show_narration_error)
+        self.llm_thread.start()
+        self.panel.llm_button.clicked.connect(self._request_narration)
+        if not (ROOT / llm_adapter).exists():
+            self.panel.llm_status.setText("LLM adapter not found; train it first.")
         self.counts = {"dist": [0, 0], "normal": [0, 0]}  # [correct, total]
         self.run = None                                   # current run of same-class cycles
         self.held_since = {}
@@ -300,6 +372,39 @@ class MainWindow(QMainWindow):
             self.panel.show_cycle(self.panel.last)   # re-colour the ✓ / ✗
         self.scope.update()
 
+    def _summary_for_cycle(self, c):
+        if c.ig is None:
+            hot = [0, len(c.samples)]
+        else:
+            seg = max(1, len(c.samples) // 10)
+            hot = [int(np.abs(c.ig).reshape(-1, seg).sum(1).argmax()) * seg,
+                   int(np.abs(c.ig).reshape(-1, seg).sum(1).argmax()) * seg + seg]
+        return {
+            "dataset": "xpqrs_gui",
+            "true_class": c.true_class,
+            "predicted_class": c.pred_class,
+            "confidence": round(c.confidence, 4),
+            "top3": [[cls, round(prob, 4)] for cls, prob in c.top3],
+            "most_influential_segment_samples": hot,
+            "signal_peak_pu": round(float(np.abs(c.samples).max()), 3),
+        }
+
+    def _request_narration(self):
+        if not self.panel.last:
+            self.panel.llm_status.setText("Complete a cycle first.")
+            return
+        self.panel.llm_button.setEnabled(False)
+        self.panel.llm_status.setText("Generating LLM explanation...")
+        self.llm_worker.request.emit(self._summary_for_cycle(self.panel.last))
+
+    def _show_narration(self, text):
+        self.panel.llm_text.setText(f"<b>LLM explanation:</b><br>{text}")
+        self.panel.llm_button.setEnabled(True)
+
+    def _show_narration_error(self, text):
+        self.panel.llm_status.setText(text)
+        self.panel.llm_button.setEnabled(True)
+
     def _speed_text(self, v):
         self.speed_label.setText(f"{v} cycles/s  (×{v / 50:.2f} real time)")
 
@@ -350,6 +455,7 @@ class MainWindow(QMainWindow):
 
     def _emit_cycle(self):
         c = self.clf.classify(self.stream.next_cycle())
+        self.panel.llm_button.setEnabled(True)
         key = "normal" if c.true_class == NORMAL else "dist"
         self.counts[key][0] += c.pred_class == c.true_class
         self.counts[key][1] += 1
@@ -385,6 +491,8 @@ def run_demo(win, app, out):
 
     def shoot():
         win.timer.stop()
+        win.llm_thread.quit()
+        win.llm_thread.wait(3000)
         win.grab().save(str(out))
         print("screenshot:", out)
         app.quit()
@@ -397,6 +505,10 @@ def main():
     ap.add_argument("--speed", type=int, default=6, help="playback speed in cycles per second (1-25)")
     ap.add_argument("--demo", metavar="PNG", help="run a scripted demo, save a screenshot and exit")
     ap.add_argument("--theme", choices=list(THEMES), help="colour theme (default: last used, else the OS setting)")
+    ap.add_argument("--llm-adapter", default="outputs/llm/pqd_narrator_smollm",
+                    help="LoRA adapter directory for the GUI narration button")
+    ap.add_argument("--llm-base", default="HuggingFaceTB/SmolLM2-135M-Instruct",
+                    help="base model used by the LoRA adapter")
     a = ap.parse_args()
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
@@ -410,7 +522,7 @@ def main():
     theme = a.theme or QSettings("pqd-explainer", "gui").value("theme") or ("dark" if os_dark else "light")
     theme = theme if theme in THEMES else "light"   # ignore a corrupted settings value
     apply_theme(app, theme)
-    win = MainWindow(a.ckpt, max(1, min(25, a.speed)), theme)
+    win = MainWindow(a.ckpt, max(1, min(25, a.speed)), theme, a.llm_adapter, a.llm_base)
     win.show()
     if a.demo:
         run_demo(win, app, a.demo)

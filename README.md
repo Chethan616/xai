@@ -148,6 +148,7 @@ To use a newly trained model with `explain.py`, pass `--ckpt <path>`.
 │   ├── gui.py                Qt live disturbance explainer
 │   ├── faithfulness.py       deletion test for explanations
 │   ├── make_figures.py       regenerate docs/figures
+│   ├── make_slide_figures.py slide-sized figures in docs/figures/slides
 │   └── legacy/               first-iteration SHAP and attention scripts
 ├── tests/                    self-checks (faithfulness test, GUI stream)
 ├── notebooks/                exploration notebooks 01–05 (+ archive/)

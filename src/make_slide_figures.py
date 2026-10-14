@@ -270,18 +270,22 @@ def predictions(ds):
     return y["test"], p, names
 
 
-def confusion_and_f1():
-    y, p, names = predictions("xpqrs")
+CONFUSABLE = {"Interruption", "Interruption+Harmonics", "Sag", "Sag+Harmonics"}  # PQD-16c label-noise family
+
+
+def confusion_and_f1(ds="xpqrs"):
+    y, p, names = predictions(ds)
     short = [nice(n) for n in names]
+    n = len(names)
     cm = confusion_matrix(y, p, normalize="true")
     fig = plt.figure(figsize=(FIG_W, FIG_H))
     ax = fig.add_axes((0.175, 0.1, 0.4, 0.84))
     ax.imshow(cm, cmap="Blues", vmin=0, vmax=1)
     ax.grid(False)
-    ax.set_xticks(range(17), [str(k + 1) for k in range(17)], fontsize=10.5)
-    ax.set_yticks(range(17), [f"{s}  {k + 1}" for k, s in enumerate(short)], fontsize=11)
-    for i in range(17):
-        for j in range(17):
+    ax.set_xticks(range(n), [str(k + 1) for k in range(n)], fontsize=10.5)
+    ax.set_yticks(range(n), [f"{s}  {k + 1}" for k, s in enumerate(short)], fontsize=11)
+    for i in range(n):
+        for j in range(n):
             if cm[i, j] >= 0.02:
                 ax.text(j, i, f"{cm[i, j]*100:.0f}", ha="center", va="center", fontsize=9,
                         color="white" if cm[i, j] > 0.6 else INK)
@@ -289,16 +293,18 @@ def confusion_and_f1():
     ax.set_xlabel("predicted class (number as on the left)", fontsize=11.5)
     f1 = f1_score(y, p, average=None)
     o = np.argsort(f1)
-    ax2 = fig.add_axes((0.775, 0.1, 0.215, 0.84))
-    ax2.barh([short[i] for i in o], f1[o], color=[ORANGE if f1[i] < 0.97 else NAVY for i in o], height=0.66)
+    ax2 = fig.add_axes((0.765, 0.1, 0.205, 0.84))
+    weak = [names[i] in CONFUSABLE if ds == "pqd16" else f1[i] < 0.97 for i in range(n)]
+    ax2.barh([short[i] for i in o], f1[o], color=[ORANGE if weak[i] else NAVY for i in o], height=0.66)
+    lo = 0.85 if ds == "xpqrs" else 0.0
     for k, i in enumerate(o):
-        ax2.text(f1[i] - 0.003, k, f"{f1[i]:.3f}", va="center", ha="right", fontsize=10, color="white")
-    ax2.set_xlim(0.85, 1.0)
-    ax2.set_xticks([0.85, 0.9, 0.95, 1.0])
+        ax2.text(f1[i] - (1 - lo) * 0.02, k, f"{f1[i]:.3f}", va="center", ha="right", fontsize=10, color="white")
+    ax2.set_xlim(lo, 1.0)
+    ax2.set_xticks([0.85, 0.9, 0.95, 1.0] if ds == "xpqrs" else [0, 0.25, 0.5, 0.75, 1.0])
     ax2.tick_params(axis="y", labelsize=11)
     ax2.grid(axis="y", visible=False)
     ax2.set_title("Per-class F1", fontsize=13.5)
-    save(fig, "confusion_f1.png")
+    save(fig, "confusion_f1.png" if ds == "xpqrs" else f"confusion_f1_{ds}.png")
 
 
 def label_noise():
@@ -428,5 +434,6 @@ if __name__ == "__main__":
     for fn in (waveforms, preprocess, architecture, xai_flow, model_comparison, confusion_and_f1,
                label_noise, faithfulness, explanations):
         fn()
+    confusion_and_f1("pqd16")
     if a.gui:
         gui_zoom(a.gui)

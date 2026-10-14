@@ -1,7 +1,12 @@
-# SHAP explainability
+# Legacy SHAP explainers
 
-`shap_cnn.py` (and `shap_cnn_bilstm.py` for the CNN-Res-BiLSTM baseline) are the original SHAP explainers for the legacy checkpoints in `models/legacy/`. It does
-not modify the notebook, the training code, or the saved checkpoint.
+> **Legacy code** from the first iteration of the project. For the current
+> pipeline (ResNet-CAM, Integrated Gradients, CAM, Tree SHAP) see
+> [`src/explain.py`](../explain.py) and [docs/XAI.md](../../docs/XAI.md).
+
+`shap_cnn.py` (and `shap_cnn_bilstm.py` for the CNN-Res-BiLSTM baseline) are
+the original SHAP explainers for the legacy checkpoints in `models/legacy/`.
+They only read the checkpoints and the PQD-16c CSVs; nothing is modified.
 
 SHAP is used here instead of LIME because the trained model is differentiable
 and the input is a 640-point signal. SHAP can assign an attribution to every
@@ -17,9 +22,7 @@ From the repository root:
 pip install -r requirements.txt
 ```
 
-This XAI requirements file is intentionally standalone. The repository's
-original exported requirements pin `numpy==2.5.2`, which cannot be installed
-on Python 3.11.
+The same `requirements.txt` as the main pipeline; no extra packages are needed.
 
 ## Explain a test sample
 
